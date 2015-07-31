@@ -4,6 +4,8 @@
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.0.1",
     "angular-resource": "~1.4.2",
-    "ngCordova": "~0.1.17-alpha"
+    "ngCordova": "~0.1.17-alpha",
+    "ionic-material": "~0.4.2",
+    "robotodraft": "~1.1.0"
   }
 }
