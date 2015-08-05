@@ -6,11 +6,13 @@ var db = null;
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordova'])
 
-    .run(function($ionicPlatform, ngFB, $cordovaSQLite) {
+.run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 
-    ngFB.init({ appId: '804333932968844' })
+    ngFB.init({
+        appId: '804333932968844'
+    })
 
-    $ionicPlatform.ready(function() {
+    $ionicPlatform.ready(function () {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
         if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -19,23 +21,23 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordov
         if (window.StatusBar) {
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
-        }        
+        }
 
-        if(window.cordova){
+        if (window.cordova) {
             // App syntax        
             db = $cordovaSQLite.openDB("mepague.db");
-        }else{
+        } else {
             // Ionic serve syntax
             db = window.openDatabase('mepague.db', '1.0', "Me Pague", -1);
         }
-        //$cordovaSQLite.execute(db, "DROP TABLE IF EXISTS friend" );
-        $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0, credit long default 0)");
+        //$cordovaSQLite.execute(db, "DROP TABLE IF EXISTS friend");
+        $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
 
     });
 
 })
 
-    .config(function($stateProvider, $urlRouterProvider) {
+.config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
 
         .state('app', {
@@ -45,7 +47,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordov
         controller: 'AppCtrl'
     })
 
-        .state('app.friends', {
+    .state('app.friends', {
         url: "/friends",
         views: {
             'menuContent': {
@@ -55,7 +57,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordov
         }
     })
 
-        .state('app.friend', {
+    .state('app.friend', {
         url: "/friend/:friendId",
         views: {
             'menuContent': {
@@ -65,7 +67,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordov
         }
     })
 
-        .state('app.profile', {
+    .state('app.profile', {
         url: "/profile",
         views: {
             'menuContent': {

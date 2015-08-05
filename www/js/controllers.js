@@ -1,11 +1,10 @@
 angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
-.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, ngFB, $rootScope) {
+.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, ngFB, $rootScope, $ionicSideMenuDelegate) {
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope,
-        animation: 'slide-in-up'
+        scope: $scope
     }).then(function (modal) {
         $scope.modal = modal;
         $scope.logout();
@@ -36,7 +35,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.fbLogin = function () {
         ngFB.login({
-            scope: 'email,user_friends,publish_actions'
+            scope: 'email,user_friends'
         }).then(
             function (response) {
                 if (response.status === 'connected') {
@@ -45,6 +44,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                     });
                     window.localStorage.accessToken = response.authResponse.accessToken;
                     getFriendsList();
+                    initUser();
 
                     console.log(response)
                 } else {
@@ -93,7 +93,30 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             }, function (error) {
                 console.log('error', error)
             });
+    }
 
+    var initUser = function () {
+
+        if (window.localStorage.hasOwnProperty("accessToken")) {
+            $http.get("https://graph.facebook.com/v2.4/me", {
+                    params: {
+                        access_token: window.localStorage.accessToken,
+                        fields: "id,name,gender,location,website,picture,relationship_status",
+                        format: "json"
+                    }
+                })
+                .then(
+                    function (result) {
+                        console.log(result);
+                        $scope.user = result.data;
+                    },
+                    function (error) {
+                        console.log('error');
+                    });
+
+        } else {
+            alert('Not signed in!'); //href="#/app/profile"
+        }
     }
 
     $scope.loggedUser = function () {
@@ -104,18 +127,27 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 
     $scope.logout = function () {
+        $rootScope.$broadcast('logout');
+        $ionicSideMenuDelegate.toggleLeft();
+    }
 
+    $scope.$on('logout', function () {
         console.log('logout');
         ngFB.logout();
-        $location.path('/app');
 
         localStorage.clear();
         console.warn('localStorage clear');
         Friends.clearDatabase().then(function () {
             console.warn('BD clear');
         });
-        $scope.userLogged = false;
-    }
+
+        $rootScope.$broadcast('bdPopulated');
+
+        $scope.user = null;
+
+        $scope.modal.show();
+    });
+
 
 })
 
@@ -155,10 +187,10 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.$on('$ionicView.enter', function (e) {
         if ($scope.searchKey.length == 0)
             Friends.getTop10().then(function (fs) {
-                console.log(fs);
                 $scope.friends = fs
             });
     });
+
 })
 
 .controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, Friends) {
@@ -170,12 +202,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.data = {};
 
-    $scope.showDebtPopup = function () {
+    $scope.incrementPopup = function () {
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
             template: '<input type="number" step="0.01" min="0" ng-model="data.debt">',
-            title: 'Quanto te deve?',
+            title: 'Aumentar a dívida',
             scope: $scope,
             buttons: [
                 {
@@ -189,7 +221,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                     type: 'button-positive',
                     onTap: function (e) {
                         if (!$scope.data.debt) {
-                            //don't allow the user to close unless he enters wifi password
                             e.preventDefault();
                             myPopup.close();
                         } else {
@@ -201,7 +232,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         });
         myPopup.then(function (res) {
             var newFriend = angular.copy($scope.friend);
-            newFriend.debt = res;
+            newFriend.debt = $scope.friend.debt + res;
 
             console.log('old', $scope.friend, 'new', newFriend);
 
@@ -215,14 +246,14 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         });
     };
 
-    $scope.showCreditPopup = function () {
+    $scope.decrementPopup = function () {
 
         $scope.data = {};
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
             template: '<input type="number" step="0.01" min="0" ng-model="data.credit">',
-            title: 'Quanto vc deve?',
+            title: 'Diminuir a dívida',
             scope: $scope,
             buttons: [
                 {
@@ -236,7 +267,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                     type: 'button-positive',
                     onTap: function (e) {
                         if (!$scope.data.credit) {
-                            //don't allow the user to close unless he enters wifi password
                             e.preventDefault();
                             myPopup.close();
                         } else {
@@ -248,7 +278,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         });
         myPopup.then(function (res) {
             var newFriend = angular.copy($scope.friend);
-            newFriend.credit = res;
+            newFriend.debt = $scope.friend.debt - res;
 
             console.log('old', $scope.friend, 'new', newFriend);
 
@@ -268,43 +298,4 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     };
 })
 
-.controller('ProfileCtrl', function ($http, $scope, $location, $cordovaSQLite, ngFB, Friends) {
-
-    $scope.init = function () {
-
-        if (window.localStorage.hasOwnProperty("accessToken")) {
-
-            $http.get("https://graph.facebook.com/v2.2/me", {
-                    params: {
-                        access_token: window.localStorage.accessToken,
-                        fields: "id,name,gender,location,website,picture,relationship_status",
-                        format: "json"
-                    }
-                })
-                .then(
-                    function (result) {
-                        console.log(result.data);
-                        $scope.user = result.data;
-                    },
-                    function (error) {
-                        console.log('error');
-                    });
-
-        } else {
-            alert('Not signed in!');
-            //href="#/app/profile"
-        }
-    }
-
-    $scope.fbLogout = function () {
-
-        ngFB.logout();
-        $location.path('/app');
-
-        localStorage.clear();
-        console.warn('localStorage clear');
-        Friends.clearDatabase().then(function () {
-            console.warn('BD clear');
-        });
-    }
-});
+.controller('ProfileCtrl', function ($http, $scope, $location, $cordovaSQLite, ngFB, Friends) {});
