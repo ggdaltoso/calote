@@ -43,7 +43,7 @@ angular.module('starter.services', ['ngResource'])
 
     // change for most debts    
     function getTop10() {
-        return DBA.query("SELECT * FROM friend order by debt desc LIMIT 10")
+        return DBA.query("SELECT * FROM friend order by case when debt <> 0 then 0 else 1 end, debt desc LIMIT 10")
             .then(function (result) {
                 return DBA.getAll(result);
             });
