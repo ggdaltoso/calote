@@ -7,7 +7,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         scope: $scope
     }).then(function (modal) {
         $scope.modal = modal;
-        $scope.logout();
+        //$scope.logout();
         $scope.modal.show();
     });
 
@@ -23,7 +23,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     // Triggered in the login modal to close it
     $scope.closeLogin = function () {
-        console.info('closing')
         $scope.modal.hide();
     };
 
@@ -45,8 +44,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                     window.localStorage.accessToken = response.authResponse.accessToken;
                     getFriendsList();
                     initUser();
-
-                    console.log(response)
                 } else {
                     alert('Facebook login failed');
                 }
@@ -67,7 +64,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
                     Friends.addAllFriends(array)
                         .then(function () {
-                            console.log('finished', new Date());
                             $rootScope.$broadcast('bdPopulated');
                             $scope.closeLogin();
                         });
@@ -75,7 +71,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
                     Friends.addAllFriends(array)
                         .then(function () {
-                            console.log('finished', new Date());
                             $rootScope.$broadcast('bdPopulated');
 
                         });
@@ -90,9 +85,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             .then(function (result) {
                 array = result.data;
                 f(result.paging.next);
-            }, function (error) {
-                console.log('error', error)
-            });
+            }, function (error) {});
     }
 
     var initUser = function () {
@@ -107,11 +100,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 })
                 .then(
                     function (result) {
-                        console.log(result);
                         $scope.user = result.data;
-                    },
-                    function (error) {
-                        console.log('error');
                     });
 
         } else {
@@ -120,7 +109,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 
     $scope.loggedUser = function () {
-        console.log(window.localStorage.hasOwnProperty("accessToken"))
         if (!window.localStorage.hasOwnProperty("accessToken")) {
             $scope.login();
         }
@@ -132,33 +120,25 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 
     $scope.$on('logout', function () {
-        console.log('logout');
         ngFB.logout();
-
+        console.log('logout')
         localStorage.clear();
-        console.warn('localStorage clear');
-        Friends.clearDatabase().then(function () {
-            console.warn('BD clear');
-        });
-
+        Friends.clearDatabase();
         $rootScope.$broadcast('bdPopulated');
 
         $scope.user = null;
-
         $scope.modal.show();
     });
 
 
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, Friends, sharedService) {
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, Friends, sharedService) {
 
     $scope.$on('bdPopulated', function () {
-        console.log('bdPopulated');
         Friends.getTop10()
             .then(function (fs) {
                 $scope.friends = fs;
-                console.log('Qtd ' + $scope.friends.length, new Date());
                 $ionicLoading.hide();
             });
     });
@@ -167,12 +147,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.clearSearch = function () {
         $scope.searchKey = "";
+        $rootScope.$broadcast('bdPopulated');
     }
 
     $scope.friendsBkp;
 
     $scope.search = function () {
-        console.log('searching...')
         if ($scope.searchKey.length > 2) {
             Friends.searchFriends($scope.searchKey)
                 .then(function (fs) {
@@ -234,8 +214,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             var newFriend = angular.copy($scope.friend);
             newFriend.debt = $scope.friend.debt + res;
 
-            console.log('old', $scope.friend, 'new', newFriend);
-
             Friends.updateFriend($scope.friend, newFriend)
                 .then(function () {
                     Friends.getFriendByID(friendId)
@@ -279,8 +257,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         myPopup.then(function (res) {
             var newFriend = angular.copy($scope.friend);
             newFriend.debt = $scope.friend.debt - res;
-
-            console.log('old', $scope.friend, 'new', newFriend);
 
             Friends.updateFriend($scope.friend, newFriend)
                 .then(function () {
