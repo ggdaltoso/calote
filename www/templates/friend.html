@@ -5,7 +5,7 @@
                 <img src="{{friend.picture}}">
                 <h2>{{friend.name}}</h2>
                 <p>
-                    <i class="ion-arrow-up-b balanced" ng-class="{ assertive: friend.debt < 0,  balanced: friend.debt >= 0}"> {{friend.debt | number:2 }} </i> </p>
+                    <i class="balanced" ng-class="{ assertive: friend.debt < 0,  balanced: friend.debt >= 0}"> {{friend.debt | number:2 }} </i> </p>
             </div>
             <div class="item tabs tabs-secondary tabs-icon-left">
                 <a class="tab-item" ng-click="incrementPopup()">
