@@ -6,7 +6,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $ionicModal.fromTemplateUrl('templates/login.html', {
         scope: $scope
     }).then(function (modal) {
-        $scope.modal = modal;
+        $scope.modal = modal;          
         $scope.loggedUser();
     });
 
@@ -29,13 +29,14 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.login = function () {
         $scope.fbLogin();
         //// $scope.modal.show(); # not anymore
-    };
+    };    
 
-    $scope.fbLogin = function () {
+    $scope.fbLogin = function () {   
+        
         ngFB.login({
-            scope: 'email,user_friends'
+            scope: 'email,user_friends,publish_actions'
         }).then(
-            function (response) {
+            function (response) {                
                 if (response.status === 'connected') {
                     $ionicLoading.show({
                         template: '<p>Adicionando amigos<p><p>Isso pode levar alguns minutos<p><ion-spinner icon="android"></ion-spinner>'
@@ -47,12 +48,14 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 } else {
                     alert('Facebook login failed');
                 }
+            }, function(err){
+                 alert('Facebook login failed' + err);
             });
     };
     
     var changeModalText = function(text){
         $ionicLoading
-            .show({ template: '<p>Adicionando amigos<p><p>' + text + '<p><ion-spinner icon="android"></ion-spinner>' });
+            .show({ template: text });
     }
 
     var getFriendsList = function () {
@@ -72,6 +75,17 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             $rootScope.$broadcast('bdPopulated');
                             $scope.closeLogin();
                         });
+                        
+                    array.forEach(function(f, i){                        
+                        setTimeout(function(){
+                            changeModalText(f.name);
+                            
+                            if(i == array.length - 1){
+                                 changeModalText( '<p>' i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>' );
+                            }
+                            
+                        }, i * 80);
+                    })
                     */
                 } else {
 
@@ -81,10 +95,15 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             console.log("finish");
                         });
                     
-                    array.forEach(function(f){                        
-                        $timeout(function(){
-                            changeModalText(f.name);
-                        }, 500);
+                    array.forEach(function(f, i){                        
+                        setTimeout(function(){
+                            changeModalText('<p>Adicionando amigos<p><p>' + f.name + '<p>');
+                            
+                            if(i == array.length - 1){
+                                 changeModalText( '<p>' + i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>' );
+                            }
+                            
+                        }, i * 40);
                     })
 
                 }
@@ -113,6 +132,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 .then(
                     function (result) {
                         console.log(result.data);
+                        window.localStorage.user = JSON.stringify(result.data);
                         $scope.user = result.data;
                     });
 
@@ -123,7 +143,9 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.loggedUser = function () {
         if (!window.localStorage.hasOwnProperty("accessToken")) {
-            $scope.modal.show();
+            $scope.modal.show();   
+        }else{
+            $scope.user = JSON.parse(window.localStorage.user);
         }
     }
 
@@ -141,8 +163,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         $scope.user = null;
         $scope.modal.show();
-    });
-
+    });    
 
 })
 

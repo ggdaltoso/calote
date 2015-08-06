@@ -1,5 +1,6 @@
 {
     "jscodehints.detectedExclusions": [
-        "c:/Users/gabriel.daltoso/Documents/app/conference/www/js/controllers.js"
+        "c:/Users/gabriel.daltoso/Documents/app/conference/www/js/controllers.js",
+        "c:/Users/gabriel.daltoso/Documents/app/calote/www/js/app.js"
     ]
 }
