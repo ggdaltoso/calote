@@ -49,6 +49,11 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 }
             });
     };
+    
+    var changeModalText = function(text){
+        $ionicLoading
+            .show({ template: '<p>Adicionando amigos<p><p>' + text + '<p><ion-spinner icon="android"></ion-spinner>' });
+    }
 
     var getFriendsList = function () {
 
@@ -74,12 +79,13 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                         .then(function () {
                             $rootScope.$broadcast('bdPopulated');
                             console.log("finish");
-
-                            $ionicLoading.show({
-                                template: '<p>Espere mais um pouco<p><p>Você tem muitos amigos<p><ion-spinner icon="android"></ion-spinner>'
-                            });
-
                         });
+                    
+                    array.forEach(function(f){                        
+                        $timeout(function(){
+                            changeModalText(f.name);
+                        }, 500);
+                    })
 
                 }
             });
