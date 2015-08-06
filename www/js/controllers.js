@@ -7,8 +7,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         scope: $scope
     }).then(function (modal) {
         $scope.modal = modal;
-        //$scope.logout();
-        $scope.modal.show();
+        $scope.loggedUser();
     });
 
     // With the new view caching in Ionic, Controllers are only called
@@ -39,11 +38,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             function (response) {
                 if (response.status === 'connected') {
                     $ionicLoading.show({
-                        template: '<p>Adicionando amigos<p><ion-spinner></ion-spinner>'
+                        template: '<p>Adicionando amigos<p><p>Isso pode levar alguns minutos<p><ion-spinner icon="android"></ion-spinner>'
                     });
                     window.localStorage.accessToken = response.authResponse.accessToken;
                     getFriendsList();
                     initUser();
+                    $scope.modal.hide();
                 } else {
                     alert('Facebook login failed');
                 }
@@ -60,18 +60,24 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 array = array.concat(nextResult.data.data);
 
                 if (nextResult.data.paging.next != null) {
-                    //// f(nextResult.data.paging.next); # we don't need all friends yet..
-
+                    f(nextResult.data.paging.next);
+                    /*
                     Friends.addAllFriends(array)
                         .then(function () {
                             $rootScope.$broadcast('bdPopulated');
                             $scope.closeLogin();
                         });
+                    */
                 } else {
 
                     Friends.addAllFriends(array)
                         .then(function () {
                             $rootScope.$broadcast('bdPopulated');
+                            console.log("finish");
+
+                            $ionicLoading.show({
+                                template: '<p>Espere mais um pouco<p><p>Você tem muitos amigos<p><ion-spinner icon="android"></ion-spinner>'
+                            });
 
                         });
 
@@ -100,6 +106,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 })
                 .then(
                     function (result) {
+                        console.log(result.data);
                         $scope.user = result.data;
                     });
 
@@ -110,7 +117,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.loggedUser = function () {
         if (!window.localStorage.hasOwnProperty("accessToken")) {
-            $scope.login();
+            $scope.modal.show();
         }
     }
 
@@ -156,11 +163,13 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         if ($scope.searchKey.length > 2) {
             Friends.searchFriends($scope.searchKey)
                 .then(function (fs) {
-                    $scope.friendsBkp = $scope.friends;
                     $scope.friends = fs
                 });
         } else {
-            $scope.friends = $scope.friendsBkp;
+            Friends.getTop10()
+                .then(function (fs) {
+                    $scope.friends = fs;
+                });
         }
     };
 

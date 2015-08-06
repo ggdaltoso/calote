@@ -44,12 +44,16 @@
     -moz-animation: outer-ripple 2s linear infinite;
     animation: outer-ripple 2s linear infinite;
 }
+
+/*
 .login-button:before {
     z-index: -200;
     -webkit-animation: inner-ripple 2000ms linear infinite;
     -moz-animation: inner-ripple 2000ms linear infinite;
     animation: inner-ripple 2000ms linear infinite;
 }
+*/
+
 
 /* outer ripple */
 
