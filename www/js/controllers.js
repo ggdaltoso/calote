@@ -34,7 +34,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.fbLogin = function () {   
         
         ngFB.login({
-            scope: 'email,user_friends,publish_actions'
+            scope: 'email,user_friends'
         }).then(
             function (response) {                
                 if (response.status === 'connected') {
