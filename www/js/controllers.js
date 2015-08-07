@@ -228,8 +228,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             buttons: [
                 {
                     text: 'Cancel',
-                    onTap: function () {
-                        myPopup.close();
+                    onTap: function (e) {
+                        return 0;                        
                     }
                 },
                 {
@@ -272,8 +272,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             buttons: [
                 {
                     text: 'Cancel',
-                    onTap: function () {
-                        myPopup.close();
+                    onTap: function (e) {
+                        return 0;                        
                     }
                 },
                 {
