@@ -37,9 +37,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
 
 })
 
-.config(function ($stateProvider, $urlRouterProvider) {
-    $stateProvider
+.config(function ($stateProvider, $urlRouterProvider, $ionicFilterBarConfigProvider) {
 
+    $ionicFilterBarConfigProvider.placeholder('Nome');
+
+    $stateProvider
         .state('app', {
         url: "/app",
         abstract: true,

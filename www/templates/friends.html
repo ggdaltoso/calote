@@ -3,7 +3,7 @@
         <button class="button button-icon icon ion-ios-search-strong" ng-click="showFilterBar()">
         </button>
     </ion-nav-buttons> 
-    <ion-content class="has-header">
+    <ion-content class="has-header" direction="y" scrollbar-y="false"> 
         <ion-list>
             <ion-item ng-repeat="friend in friends track by $index" type="item-text-wrap" class="item-avatar" href="#/app/friend/{{friend.id}}" ng-click="clearSearch()">
                 <img src="{{friend.picture}}" />
@@ -15,5 +15,9 @@
                 </p>
             </ion-item>
         </ion-list>
+
+        <div ng-if="friends !== undefined && !friends.length" class="no-results">
+          <p>Nenhum caloteiro!</p>
+        </div>
     </ion-content>
 </ion-view>
