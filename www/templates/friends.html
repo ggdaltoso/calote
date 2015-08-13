@@ -1,18 +1,18 @@
 <ion-view view-title="Caloteiros">
-    <div class="bar bar-subheader item-input-inset">
-        <label class="item-input-wrapper">
-            <i class="icon ion-ios7-search placeholder-icon"></i>
-            <input id="searchKey" type="search" placeholder="Procurar..." ng-model="searchKey" autocorrect="off" ng-change="search()">
-        </label>
-        <button class="button button-clear" ng-click="clearSearch()">X</button>
-    </div>
-    <ion-content class="has-header has-subheader">
-
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon icon ion-ios-search-strong" ng-click="showFilterBar()">
+        </button>
+    </ion-nav-buttons> 
+    <ion-content class="has-header">
         <ion-list>
             <ion-item ng-repeat="friend in friends track by $index" type="item-text-wrap" class="item-avatar" href="#/app/friend/{{friend.id}}" ng-click="clearSearch()">
                 <img src="{{friend.picture}}" />
                 <h2>{{friend.name}}</h2>
-                <p> <i ng-class="{ assertive: friend.debt < 0,  balanced: friend.debt >= 0}">$ {{ friend.debt | number:2 }} </i> </p>
+                <p> 
+                    <i ng-class="{ assertive: friend.debt < 0,  balanced: friend.debt >= 0}">
+                    $ {{ friend.debt | number:2 }} 
+                    </i> 
+                </p>
             </ion-item>
         </ion-list>
     </ion-content>

@@ -4,7 +4,7 @@ var db = null;
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'ngOpenFB', 'ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ngOpenFB', 'ngCordova'])
 
 .run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 

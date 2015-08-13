@@ -6,7 +6,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $ionicModal.fromTemplateUrl('templates/login.html', {
         scope: $scope
     }).then(function (modal) {
-        $scope.modal = modal;          
+        $scope.modal = modal;
         $scope.loggedUser();
     });
 
@@ -29,14 +29,14 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.login = function () {
         $scope.fbLogin();
         //// $scope.modal.show(); # not anymore
-    };    
+    };
 
-    $scope.fbLogin = function () {   
-        
+    $scope.fbLogin = function () {
+
         ngFB.login({
             scope: 'email,user_friends'
         }).then(
-            function (response) {                
+            function (response) {
                 if (response.status === 'connected') {
                     $ionicLoading.show({
                         template: '<p>Adicionando amigos<p><p>Isso pode levar alguns minutos<p><ion-spinner icon="android"></ion-spinner>'
@@ -48,14 +48,17 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 } else {
                     alert('Facebook login failed');
                 }
-            }, function(err){
-                 alert('Facebook login failed' + err);
+            },
+            function (err) {
+                alert('Facebook login failed' + err);
             });
     };
-    
-    var changeModalText = function(text){
+
+    var changeModalText = function (text) {
         $ionicLoading
-            .show({ template: text });
+            .show({
+                template: text
+            });
     }
 
     var getFriendsList = function () {
@@ -94,15 +97,15 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             $rootScope.$broadcast('bdPopulated');
                             console.log("finish");
                         });
-                    
-                    array.forEach(function(f, i){                        
-                        setTimeout(function(){
+
+                    array.forEach(function (f, i) {
+                        setTimeout(function () {
                             changeModalText('<p>Adicionando amigos<p><p>' + f.name + '<p>');
-                            
-                            if(i == array.length - 1){
-                                 changeModalText( '<p>' + i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>' );
+
+                            if (i == array.length - 1) {
+                                changeModalText('<p>' + i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>');
                             }
-                            
+
                         }, i * 40);
                     })
 
@@ -116,7 +119,9 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             .then(function (result) {
                 array = result.data;
                 f(result.paging.next);
-            }, function (error) {});
+            }, function (error) {
+                console.log(error);
+            });
     }
 
     var initUser = function () {
@@ -143,8 +148,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.loggedUser = function () {
         if (!window.localStorage.hasOwnProperty("accessToken")) {
-            $scope.modal.show();   
-        }else{
+            $scope.modal.show();
+        } else {
             $scope.user = JSON.parse(window.localStorage.user);
         }
     }
@@ -163,11 +168,11 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         $scope.user = null;
         $scope.modal.show();
-    });    
+    });
 
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, Friends, sharedService) {
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, Friends, sharedService) {
 
     $scope.$on('bdPopulated', function () {
         Friends.getTop10()
@@ -179,26 +184,21 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.searchKey = "";
 
-    $scope.clearSearch = function () {
-        $scope.searchKey = "";
-        $rootScope.$broadcast('bdPopulated');
-    }
-
-    $scope.friendsBkp;
-
-    $scope.search = function () {
-        if ($scope.searchKey.length > 2) {
-            Friends.searchFriends($scope.searchKey)
-                .then(function (fs) {
-                    $scope.friends = fs
-                });
-        } else {
-            Friends.getTop10()
-                .then(function (fs) {
-                    $scope.friends = fs;
-                });
+    $scope.showFilterBar = function () {
+      filterBarInstance = $ionicFilterBar.show({
+        items: $scope.friends,
+        update: function (filteredItems) {
+          $scope.friends = filteredItems;
         }
+      });
     };
+
+    $scope.refreshItems = function () {
+      if (filterBarInstance) {
+        filterBarInstance();
+        filterBarInstance = null;
+      }
+    }
 
     $scope.$on('$ionicView.enter', function (e) {
         if ($scope.searchKey.length == 0)
@@ -229,7 +229,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 {
                     text: 'Cancel',
                     onTap: function (e) {
-                        return 0;                        
+                        return 0;
                     }
                 },
                 {
@@ -273,7 +273,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 {
                     text: 'Cancel',
                     onTap: function (e) {
-                        return 0;                        
+                        return 0;
                     }
                 },
                 {
