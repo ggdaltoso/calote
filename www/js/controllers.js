@@ -32,7 +32,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     };
 
     $scope.fbLogin = function () {
-
         ngFB.login({
             scope: 'email,user_friends'
         }).then(
@@ -147,6 +146,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 
     $scope.loggedUser = function () {
+
+        console.log('Tem accessToken ', window.localStorage.hasOwnProperty("accessToken"))
         if (!window.localStorage.hasOwnProperty("accessToken")) {
             $scope.modal.show();
         } else {
@@ -184,12 +185,26 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.searchKey = "";
 
+    $scope.search = function () {
+        console.log('search', $scope.searchKey)
+
+        if ($scope.searchKey.length > 2) {
+            Friends.searchFriends($scope.searchKey)
+                .then(function (fs) {
+                    $scope.friends = fs
+                });
+        } else {
+            Friends.getTop10()
+                .then(function (fs) {
+                    $scope.friends = fs;
+                });
+        }
+    };
+
     $scope.showFilterBar = function () {
       filterBarInstance = $ionicFilterBar.show({
         items: $scope.friends,
-        update: function (filteredItems) {
-          $scope.friends = filteredItems;
-        }
+        update: $scope.search
       });
     };
 
