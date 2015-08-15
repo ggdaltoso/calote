@@ -75,6 +75,11 @@ angular.module('starter.services', ['ngResource'])
 
     };
 
+    var removeFriend = function (friend){
+        var params = [friend.id];
+        return DBA.query("DELETE FROM friend WHERE id = (?)", params);
+    }
+
     var clearDatabase = function () {
         return DBA.query("DELETE FROM friend");
     }
@@ -87,7 +92,8 @@ angular.module('starter.services', ['ngResource'])
         clearDatabase: clearDatabase,
         getTop10: getTop10,
         addFriend: addFriend,
-        addAllFriends: addAllFriends
+        addAllFriends: addAllFriends,
+        removeFriend: removeFriend
     }
 
 })

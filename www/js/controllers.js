@@ -174,13 +174,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, Friends, sharedService, ContactsService){
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, sharedService, ContactsService){
 
     $scope.$on('bdPopulated', function () {
-        Friends.getTop10()
+        Friends.getAllFriends()
             .then(function (fs) {
                 $scope.friends = fs;
-                $ionicLoading.hide();
             });
     });
 
@@ -202,6 +201,22 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         }
     };
 
+    $scope.deleteFriend = function(friend){
+        var confirmPopup = $ionicPopup.confirm({
+            title: 'Deletar caloteiro',
+            template: 'Tem certeza que deseja deletar '+ friend.name + 'da sua lista?'
+        });
+
+       confirmPopup.then(function(res) {
+         if(res) {
+           Friends.removeFriend(friend).then(function(){            
+                $rootScope.$broadcast('bdPopulated');
+           });  
+         } else {            
+         }
+       });
+    }
+
     $scope.pickContact = function() {
         ContactsService.pickContact().then(
                 function(contact) {
@@ -222,7 +237,9 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.showFilterBar = function () {
       filterBarInstance = $ionicFilterBar.show({
         items: $scope.friends,
-        update: $scope.search
+        update: function(filteredFriends){
+            $scope.friends = filteredFriends;
+        }
       });
     };
 
