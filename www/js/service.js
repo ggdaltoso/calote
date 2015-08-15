@@ -164,7 +164,7 @@ angular.module('starter.services', ['ngResource'])
                 "name"      : contact.name.formatted || contact.name.givenName + " " + contact.name.familyName || "Mystery Person",
                 //"emails"        : contact.emails || [],
                 "id"        : contact.phoneNumbers[0].value || [],
-                "picture"   : contact.photos[0].value || [],
+                "picture"   : contact.photos ? contact.photos[0].value : "../img/ionic.png",
             };
 
         };

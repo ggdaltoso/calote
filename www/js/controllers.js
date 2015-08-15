@@ -225,7 +225,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                         console.log('sucesso!');
                         $rootScope.$broadcast('bdPopulated');
                     }, function(error){
-                        console.log('sucesso!')
+                        alert(error);
                     });
                 },
                 function(failure) {
