@@ -149,7 +149,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         console.log('Tem accessToken ', window.localStorage.hasOwnProperty("accessToken"))
         if (!window.localStorage.hasOwnProperty("accessToken")) {
-            $scope.modal.show();
+            //$scope.modal.show();
         } else {
             $scope.user = JSON.parse(window.localStorage.user);
         }
@@ -169,11 +169,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         $scope.user = null;
         $scope.modal.show();
-    });
+    });   
+    
 
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, Friends, sharedService) {
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, Friends, sharedService, ContactsService){
 
     $scope.$on('bdPopulated', function () {
         Friends.getTop10()
@@ -200,6 +201,23 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 });
         }
     };
+
+    $scope.pickContact = function() {
+        ContactsService.pickContact().then(
+                function(contact) {
+                    console.log(contact);
+                    Friends.addFriend(contact).then(function(success){
+                        console.log('sucesso!');
+                        $rootScope.$broadcast('bdPopulated');
+                    }, function(error){
+                        console.log('sucesso!')
+                    });
+                },
+                function(failure) {
+                    alert("Escolha um contato com um número de telefone!");
+                }
+            );
+    }
 
     $scope.showFilterBar = function () {
       filterBarInstance = $ionicFilterBar.show({

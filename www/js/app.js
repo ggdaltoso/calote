@@ -4,7 +4,7 @@ var db = null;
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ngOpenFB', 'ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ion-fab-button', 'ngOpenFB', 'ngCordova'])
 
 .run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 
@@ -30,16 +30,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
             // Ionic serve syntax
             db = window.openDatabase('mepague.db', '1.0', "Me Pague", -1);
         }
-        //$cordovaSQLite.execute(db, "DROP TABLE IF EXISTS friend");
+        $cordovaSQLite.execute(db, "DROP TABLE IF EXISTS friend");
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
 
     });
 
 })
 
-.config(function ($stateProvider, $urlRouterProvider, $ionicFilterBarConfigProvider) {
+.config(function ($stateProvider, $urlRouterProvider, $ionicFilterBarConfigProvider, $compileProvider) {
 
     $ionicFilterBarConfigProvider.placeholder('Nome');
+
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|content):|data:image\//);
 
     $stateProvider
         .state('app', {

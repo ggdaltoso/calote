@@ -1,15 +1,24 @@
 <ion-view view-title="Caloteiros">
+
+    <fab-button target-id="scrollFabButtonTarget" ng-click="pickContact()">
+        <i class="icon ion ion-android-add"></i>
+    </fab-button>
+
     <ion-nav-buttons side="secondary">
         <button class="button button-icon icon ion-ios-search-strong" ng-click="showFilterBar()" ng-model="searchKey">
         </button>
     </ion-nav-buttons> 
-    <ion-content class="has-header" direction="y" scrollbar-y="false"> 
+    <ion-content class="has-header" direction="y" scrollbar-y="false" has-bouncing="false" id="scrollFabButtonTarget"> 
         <ion-list>
-            <ion-item ng-repeat="friend in friends track by $index" type="item-text-wrap" class="item-avatar" href="#/app/friend/{{friend.id}}" ng-click="clearSearch()">
+            <ion-item ng-repeat="friend in friends track by $index" 
+            type="item-text-wrap" 
+            class="item-avatar" 
+            href="#/app/friend/{{friend.id}}" 
+            on-hold="alert('foi')">
                 <img src="{{friend.picture}}" />
                 <h2>{{friend.name}}</h2>
                 <p> 
-                    <i ng-class="{ assertive: friend.debt < 0,  balanced: friend.debt >= 0}">
+                    <i ng-class="{ assertive: friend.debt >= 0,  balanced: friend.debt < 0}">
                     $ {{ friend.debt | number:2 }} 
                     </i> 
                 </p>

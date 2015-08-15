@@ -3,7 +3,7 @@ angular.module('starter.services', ['ngResource'])
 .factory('Friends', function ($q, $timeout, $cordovaSQLite, DBA) {
 
     function addFriend(friend) {
-        var parameters = [friend.id, friend.name, friend.picture.data.url];
+        var parameters = [friend.id, friend.name, friend.picture];
         return DBA.query("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", parameters);
     }
 
@@ -148,4 +148,42 @@ angular.module('starter.services', ['ngResource'])
     };
 
     return sharedService;
-});
+})
+
+.service("ContactsService", ['$q', function($q) {
+
+        var formatContact = function(contact) {
+
+            return {
+                "name"      : contact.name.formatted || contact.name.givenName + " " + contact.name.familyName || "Mystery Person",
+                //"emails"        : contact.emails || [],
+                "id"        : contact.phoneNumbers[0].value || [],
+                "picture"   : contact.photos[0].value || [],
+            };
+
+        };
+
+        var pickContact = function() {
+
+            var deferred = $q.defer();
+
+            if(navigator && navigator.contacts) {
+                navigator.contacts.pickContact(function(contact){
+                    console.log(JSON.stringify(contact.phoneNumbers), contact.phonesNumbers !== 'undefined')
+                    if(contact.phonesNumbers !== 'undefined' && contact.phonesNumbers !== null)
+                        deferred.resolve( formatContact(contact) );
+                    else
+                        deferred.reject("Contato sem número de telefone");
+                });
+
+            } else {
+                deferred.reject("Browser error");
+            }
+
+            return deferred.promise;
+        };
+
+        return {
+            pickContact : pickContact
+        };
+    }]);
