@@ -20,7 +20,12 @@
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "com.ionic.keyboard",
-    "org.apache.cordova.contacts"
+    "org.apache.cordova.contacts",
+    "cordova-plugin-inappbrowser",
+    {
+      "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
+      "id": "io.litehelpers.cordova.sqlite"
+    }
   ],
   "cordovaPlatforms": [
     "android"
