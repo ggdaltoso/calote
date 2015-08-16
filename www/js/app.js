@@ -28,11 +28,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
             db = $cordovaSQLite.openDB("mepague.db");
         } else {
             // Ionic serve syntax
-            db = window.openDatabase('mepague.db', '1.0', "Me Pague", -1);
+            db = window.openDatabase('mepague.db', '1.0', "Me Pague",  2 * 1024 * 1024);
         }
-        $cordovaSQLite.execute(db, "DROP TABLE IF EXISTS friend");
-        $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
+   
+        db.transaction(function (tx) {
 
+            console.log('transaction init');
+
+            tx.executeSql("DROP TABLE IF EXISTS friend");
+            tx.executeSql("DROP TABLE IF EXISTS payments");
+
+            tx.executeSql("CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
+            tx.executeSql("CREATE TABLE IF NOT EXISTS payments (id text prymary key, friendId text, howMuch long default 0, creditOrDebit integer, dataPayment datetime)");
+            
+            /* test 
+            tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0342","Gabriel",".img/default.png"]);
+            tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", ["+55 16 8100 0342",10,false,"2015-08-16T13:58:56.588Z"]);
+            tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", ["+55 16 8100 0342",10,true,"2015-08-16T13:58:56.588Z"]);
+            */
+
+            console.log('transaction ends');
+        });
     });
 
 })

@@ -98,6 +98,39 @@ angular.module('starter.services', ['ngResource'])
 
 })
 
+.factory('Payments', function ($q, $timeout, $cordovaSQLite, DBA) {
+
+    function addPayment(friend, much, increase) {
+        var parameters = [friend.id, much, increase, new Date().getTime()];
+        console.log(JSON.stringify(parameters))
+        return DBA.query("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", parameters);
+    }
+
+    function getAllPaymentsFromFriend(friend) {
+        var params = [friend.id]
+        console.log('query for ' + friend.id)
+        return DBA.query("SELECT * FROM payments WHERE friendId = (?)", params)
+            .then(function (result) {
+                return DBA.getAll(result);
+            });
+    }
+
+    function getAll() {
+        console.log('getAll')
+        return DBA.query("SELECT * FROM payments")
+            .then(function (result) {
+                return DBA.getById(result);
+            });
+    }
+
+    return {
+        addPayment: addPayment,
+        getAllPaymentsFromFriend: getAllPaymentsFromFriend,
+        getAll: getAll
+    }
+
+})
+
 .factory('DBA', function ($cordovaSQLite, $q, $ionicPlatform) {
     var self = this;
 
@@ -164,7 +197,7 @@ angular.module('starter.services', ['ngResource'])
                 "name"      : contact.name.formatted || contact.name.givenName + " " + contact.name.familyName || "Mystery Person",
                 //"emails"        : contact.emails || [],
                 "id"        : contact.phoneNumbers[0].value || [],
-                "picture"   : contact.photos ? contact.photos[0].value : "../img/ionic.png",
+                "picture"   : contact.photos ? contact.photos[0].value : "./img/default.png",
             };
 
         };

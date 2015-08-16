@@ -174,7 +174,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, sharedService, ContactsService){
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, Payments, sharedService, ContactsService){
 
     $scope.$on('bdPopulated', function () {
         Friends.getAllFriends()
@@ -259,11 +259,15 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
 })
 
-.controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, Friends) {
+.controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, Friends, Payments) {
     var friendId = $stateParams.friendId;
 
     Friends.getFriendByID(friendId).then(function (result) {
         $scope.friend = result;
+        Payments.getAllPaymentsFromFriend($scope.friend)
+                        .then(function(payments){
+                            $scope.friend.payments = payments;
+                        });
     });
 
     $scope.data = {};
@@ -277,7 +281,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             scope: $scope,
             buttons: [
                 {
-                    text: 'Cancel',
+                    text: 'Cancelar',
                     onTap: function (e) {
                         return 0;
                     }
@@ -298,7 +302,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         });
         myPopup.then(function (res) {
             var newFriend = angular.copy($scope.friend);
-            newFriend.debt = $scope.friend.debt + res;
+            newFriend.debt = $scope.friend.debt + res;            
 
             Friends.updateFriend($scope.friend, newFriend)
                 .then(function () {
@@ -307,6 +311,17 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             $scope.friend = result;
                         })
                 });
+
+            Payments.addPayment($scope.friend, res, true)
+                .then(function(){
+                    Payments.getAllPaymentsFromFriend($scope.friend)
+                        .then(function(payments){
+                            $scope.friend.payments = payments;
+                            console.log('payments', JSON.stringify($scope.friend), payments)
+                        });
+                });
+
+            
         });
     };
 
@@ -321,7 +336,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             scope: $scope,
             buttons: [
                 {
-                    text: 'Cancel',
+                    text: 'Cancelar',
                     onTap: function (e) {
                         return 0;
                     }
@@ -351,6 +366,14 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             $scope.friend = result;
                         })
                 });
+
+            Payments.addPayment($scope.friend, res, false)
+            .then(function(){
+                Payments.getAllPaymentsFromFriend($scope.friend)
+                    .then(function(payments){
+                        $scope.friend.payments = payments;                        
+                    });
+            });
         });
     };
 
