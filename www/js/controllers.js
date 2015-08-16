@@ -272,6 +272,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     $scope.data = {};
 
+    $scope.listCanSwipe = true;
+
+    $scope.notify = function(friend){
+        alert('Marcelinha')
+    }
+
     $scope.incrementPopup = function () {
 
         // An elaborate, custom popup

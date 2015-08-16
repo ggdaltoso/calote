@@ -20,9 +20,8 @@
             class="item-avatar" 
             href="#/app/friend/{{friend.id}}" 
             on-hold="deleteFriend(friend)">
-            <ion-option-button class="button-info"
-                       ng-click="edit(item)">
-              Edit
+            <ion-option-button ng-click="notify(friend)" class="ion-android-notifications energized">
+                
             </ion-option-button>
                 <img src="{{friend.picture}}" />
                 <h2>{{friend.name}}</h2>
