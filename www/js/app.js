@@ -35,8 +35,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
 
             console.log('transaction init');
 
-            tx.executeSql("DROP TABLE IF EXISTS friend");
-            tx.executeSql("DROP TABLE IF EXISTS payments");
+            //tx.executeSql("DROP TABLE IF EXISTS friend");
+            //tx.executeSql("DROP TABLE IF EXISTS payments");
 
             tx.executeSql("CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
             tx.executeSql("CREATE TABLE IF NOT EXISTS payments (id text prymary key, friendId text, howMuch long default 0, creditOrDebit integer, dataPayment datetime)");
