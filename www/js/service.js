@@ -109,7 +109,7 @@ angular.module('starter.services', ['ngResource'])
     function getAllPaymentsFromFriend(friend) {
         var params = [friend.id]
         console.log('query for ' + friend.id)
-        return DBA.query("SELECT * FROM payments WHERE friendId = (?)", params)
+        return DBA.query("SELECT * FROM payments WHERE friendId = (?) ORDER BY dataPayment DESC", params)
             .then(function (result) {
                 return DBA.getAll(result);
             });
