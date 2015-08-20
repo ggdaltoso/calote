@@ -35,20 +35,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
 
             console.log('transaction init');
 
-            //tx.executeSql("DROP TABLE IF EXISTS friend");
-            //tx.executeSql("DROP TABLE IF EXISTS payments");
+            tx.executeSql("DROP TABLE IF EXISTS friend");
+            tx.executeSql("DROP TABLE IF EXISTS payments");
+            //tx.executeSql("DROP TABLE IF EXISTS user");
 
             tx.executeSql("CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0)");
             tx.executeSql("CREATE TABLE IF NOT EXISTS payments (id text prymary key, friendId text, howMuch long default 0, creditOrDebit integer, dataPayment datetime)");
-            
-            /* test 
+            tx.executeSql("CREATE TABLE IF NOT EXISTS user (id text primary key, name text, picture text)")
+            /* test */
             tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0342","Gabriel",".img/default.png"]);
-            tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0343","Dunha",".img/default.png"]);
-            tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0344","Kaká",".img/default.png"]);
+            tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0343","Jhonny",".img/default.png"]);
+            tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", ["+55 16 8100 0344","Marcela",".img/default.png"]);
             tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", ["+55 16 8100 0342",10,false,"2015-08-16T13:58:56.588Z"]);
             tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", ["+55 16 8100 0342",10,true,"2015-08-16T13:58:56.588Z"]);
-            */
-
+            
             console.log('transaction ends');
         });
     });

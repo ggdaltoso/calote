@@ -123,8 +123,13 @@ angular.module('starter.services', ['ngResource'])
             });
     }
 
+    var clearDatabase = function () {
+        return DBA.query("DELETE FROM payments");
+    }
+
     return {
         addPayment: addPayment,
+        clearDatabase: clearDatabase,
         getAllPaymentsFromFriend: getAllPaymentsFromFriend,
         getAll: getAll
     }
@@ -172,23 +177,6 @@ angular.module('starter.services', ['ngResource'])
     return self;
 })
 
-.factory('sharedService', function ($rootScope) {
-    var sharedService = {};
-
-    sharedService.message = '';
-
-    sharedService.prepForBroadcast = function (msg) {
-        this.message = msg;
-        this.broadcastItem();
-    };
-
-    sharedService.broadcastItem = function () {
-        $rootScope.$broadcast('handleBroadcast');
-    };
-
-    return sharedService;
-})
-
 .service("ContactsService", ['$q', function($q) {
 
         var formatContact = function(contact) {
@@ -209,7 +197,7 @@ angular.module('starter.services', ['ngResource'])
             if(navigator && navigator.contacts) {
                 navigator.contacts.pickContact(function(contact){
                     console.log(JSON.stringify(contact.phoneNumbers), contact.phonesNumbers !== 'undefined')
-                    if(contact.phonesNumbers !== 'undefined' && contact.phonesNumbers !== null)
+                    if(contact.phonesNumbers && contact.phonesNumbers.length)
                         deferred.resolve( formatContact(contact) );
                     else
                         deferred.reject("Contato sem número de telefone");
@@ -225,4 +213,61 @@ angular.module('starter.services', ['ngResource'])
         return {
             pickContact : pickContact
         };
-    }]);
+    }])
+
+.service('LoginService', function($q, DBA) {    
+
+    function addFriend(friend) {
+        var parameters = [friend.id, friend.name, friend.picture];
+        return DBA.query("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", parameters);
+    }
+
+    var setUser = function(friend){
+        var parameters = [friend.id, friend.name, friend.picture.data.url];
+        return DBA.query("INSERT INTO user (id, name, picture) VALUES (?,?,?)", parameters);
+    }
+
+    var getUser = function(){
+        return DBA.query("SELECT * FROM user")
+                    .then(function (result) {
+                        return DBA.getAll(result);
+                    });
+    }
+    
+    var loginUser =  function(user) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+ 
+            getUser().then(function(success){
+                if(!success.length)
+                    setUser(user).then(function(res ){
+                            getUser()
+                                .then(function(user){
+                                    deferred.resolve(user)
+                                })
+                    }, function(){
+                        console.log('Aconteceu algo estranho com seu login :)')
+                        deferred.reject('Aconteceu algo estranho com seu login :(');
+                    })
+                else
+                    deferred.resolve(success)
+            }, function(error){
+                deferred.reject('Aconteceu algo estranho com seu login :(');
+            })
+                
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+            return promise;
+    }   
+    return {           
+        loginUser: loginUser,
+        setUser: setUser,
+        getUser: getUser     
+    }
+});

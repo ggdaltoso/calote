@@ -14,11 +14,11 @@
 
     <ion-side-menu side="left">
         <ion-header-bar class="bar-stable bar-balanced">
-            <h1 class="title">{{user.name}}</h1>
+            <h1 class="title">{{user.name || 'Login'}}</h1>
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <div class="list card">
+                <div class="list card" ng-show="user">
                     <div class="item item-body">
                         <img class="full-image" src="http://graph.facebook.com/{{user.id}}/picture?width=270&height=270" />
                     </div>
@@ -28,6 +28,13 @@
                         <i class="icon ion-log-out"></i>
                     </a>
                     </div>
+                </div>
+                <div ng-hide="user">
+                    <label class="item">
+                    <button class="button button-block button-positive" ng-click="fbLogin()">
+                        Login with Facebook
+                        </button>
+                    </label>
                 </div>
 
             </ion-list>

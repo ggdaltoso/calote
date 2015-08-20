@@ -1,13 +1,12 @@
 angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
-.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, ngFB, $rootScope, $ionicSideMenuDelegate) {
+.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, Payments, ngFB, LoginService, $rootScope, $ionicSideMenuDelegate) {
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
         scope: $scope
     }).then(function (modal) {
         $scope.modal = modal;
-        $scope.loggedUser();
     });
 
     // With the new view caching in Ionic, Controllers are only called
@@ -26,24 +25,25 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     };
 
     // Open the login modal
-    $scope.login = function () {
-        $scope.fbLogin();
-        //// $scope.modal.show(); # not anymore
-    };
+    $scope.login = function() {
+        LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
+            
+        }).error(function(data) {
+            var alertPopup = $ionicPopup.alert({
+                title: 'Login failed!',
+                template: 'Please check your credentials!'
+            });
+        });
+    }
 
     $scope.fbLogin = function () {
         ngFB.login({
-            scope: 'email,user_friends'
+            scope: 'email'
         }).then(
             function (response) {
                 if (response.status === 'connected') {
-                    $ionicLoading.show({
-                        template: '<p>Adicionando amigos<p><p>Isso pode levar alguns minutos<p><ion-spinner icon="android"></ion-spinner>'
-                    });
                     window.localStorage.accessToken = response.authResponse.accessToken;
-                    getFriendsList();
                     initUser();
-                    $scope.modal.hide();
                 } else {
                     alert('Facebook login failed');
                 }
@@ -60,68 +60,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             });
     }
 
-    var getFriendsList = function () {
-
-        var array = [];
-
-        var f = function (next) {
-            $http.get(next).then(function (nextResult) {
-
-                array = array.concat(nextResult.data.data);
-
-                if (nextResult.data.paging.next != null) {
-                    f(nextResult.data.paging.next);
-                    /*
-                    Friends.addAllFriends(array)
-                        .then(function () {
-                            $rootScope.$broadcast('bdPopulated');
-                            $scope.closeLogin();
-                        });
-                        
-                    array.forEach(function(f, i){                        
-                        setTimeout(function(){
-                            changeModalText(f.name);
-                            
-                            if(i == array.length - 1){
-                                 changeModalText( '<p>' i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>' );
-                            }
-                            
-                        }, i * 80);
-                    })
-                    */
-                } else {
-
-                    Friends.addAllFriends(array)
-                        .then(function () {
-                            $rootScope.$broadcast('bdPopulated');
-                            console.log("finish");
-                        });
-
-                    array.forEach(function (f, i) {
-                        setTimeout(function () {
-                            changeModalText('<p>Adicionando amigos<p><p>' + f.name + '<p>');
-
-                            if (i == array.length - 1) {
-                                changeModalText('<p>' + i + ' adicionados </p>' + '<p>Espere mais um momento</p><ion-spinner icon="android"></ion-spinner>');
-                            }
-
-                        }, i * 40);
-                    })
-
-                }
-            });
-        }
-
-        ngFB.api({
-                path: '/me/taggable_friends'
-            })
-            .then(function (result) {
-                array = result.data;
-                f(result.paging.next);
-            }, function (error) {
-                console.log(error);
-            });
-    }
 
     var initUser = function () {
 
@@ -136,12 +74,21 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                 .then(
                     function (result) {
                         console.log(result.data);
-                        window.localStorage.user = JSON.stringify(result.data);
+                        
+                        LoginService.loginUser(result.data)
+                            .then(function(user){
+                                $scope.user = user[0];
+                                $scope.isLoggedUser = true;
+                            }, function(error){
+                                console.log(error)
+                            });
+
                         $scope.user = result.data;
                     });
 
         } else {
-            alert('Not signed in!'); //href="#/app/profile"
+            $scope.fbLogin();
+            //alert('Not signed in!'); //href="#/app/profile"
         }
     }
 
@@ -149,32 +96,32 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         console.log('Tem accessToken ', window.localStorage.hasOwnProperty("accessToken"))
         if (!window.localStorage.hasOwnProperty("accessToken")) {
-            //$scope.modal.show();
+            
         } else {
-            $scope.user = JSON.parse(window.localStorage.user);
+            LoginService.getUser()
+                .then(function(user){
+                    console.log(user)
+                    $scope.user = user[0];
+                }, function(error){
+                    console.log(error)
+                });
         }
     }
 
-    $scope.logout = function () {
-        $rootScope.$broadcast('logout');
-        $ionicSideMenuDelegate.toggleLeft();
-    }
+    $scope.loggedUser();
 
-    $scope.$on('logout', function () {
+    $scope.logout = function () {
         ngFB.logout();
         console.log('logout')
         localStorage.clear();
         Friends.clearDatabase();
+        Payments.clearDatabase();
         $rootScope.$broadcast('bdPopulated');
-
         $scope.user = null;
-        $scope.modal.show();
-    });   
-    
-
+    }
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, Payments, sharedService, ContactsService){
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, Payments, ContactsService){
 
     $scope.$on('bdPopulated', function () {
         Friends.getAllFriends()
@@ -204,7 +151,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.deleteFriend = function(friend){
         var confirmPopup = $ionicPopup.confirm({
             title: 'Deletar caloteiro',
-            template: 'Tem certeza que deseja deletar '+ friend.name + 'da sua lista?'
+            template: 'Tem certeza que deseja deletar '+ friend.name + ' da sua lista?'
         });
 
        confirmPopup.then(function(res) {
