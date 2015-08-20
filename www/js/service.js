@@ -233,6 +233,10 @@ angular.module('starter.services', ['ngResource'])
                         return DBA.getAll(result);
                     });
     }
+
+    var clearDatabase = function () {
+        return DBA.query("DELETE FROM user");
+    }
     
     var loginUser =  function(user) {
             var deferred = $q.defer();
@@ -266,6 +270,7 @@ angular.module('starter.services', ['ngResource'])
             return promise;
     }   
     return {           
+        clearDatabase: clearDatabase,
         loginUser: loginUser,
         setUser: setUser,
         getUser: getUser     

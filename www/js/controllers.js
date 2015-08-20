@@ -116,6 +116,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         localStorage.clear();
         Friends.clearDatabase();
         Payments.clearDatabase();
+        LoginService.clearDatabase();
         $rootScope.$broadcast('bdPopulated');
         $scope.user = null;
     }
