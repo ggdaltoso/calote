@@ -100,15 +100,14 @@ angular.module('starter.services', ['ngResource'])
 
 .factory('Payments', function ($q, $timeout, $cordovaSQLite, DBA) {
 
-    function addPayment(friend, much, increase) {
-        var parameters = [friend.id, much, increase, new Date().getTime()];
+    function addPayment(friend, much, increase, description) {
+        var parameters = [friend.id, much, increase, description, new Date().getTime()];
         console.log(JSON.stringify(parameters))
-        return DBA.query("INSERT INTO payments (friendId, howMuch, creditOrDebit, dataPayment) VALUES (?,?,?,?)", parameters);
+        return DBA.query("INSERT INTO payments (friendId, howMuch, creditOrDebit, description, dataPayment) VALUES (?,?,?,?,?)", parameters);
     }
 
     function getAllPaymentsFromFriend(friend) {
         var params = [friend.id]
-        console.log('query for ' + friend.id)
         return DBA.query("SELECT * FROM payments WHERE friendId = (?) ORDER BY dataPayment DESC", params)
             .then(function (result) {
                 return DBA.getAll(result);
@@ -123,6 +122,19 @@ angular.module('starter.services', ['ngResource'])
             });
     }
 
+    function getCreditAmount() {
+        return DBA.query("SELECT SUM(howMuch) as creditAmount FROM payments WHERE creditOrDebit = 1")
+            .then(function (result) {
+                return DBA.getById(result);
+            });
+    }
+    function getDebitAmount() {
+        return DBA.query("SELECT SUM(howMuch) as debitAmount FROM payments WHERE creditOrDebit = 0")
+            .then(function (result) {
+                return DBA.getById(result);
+            });
+    }
+
     var clearDatabase = function () {
         return DBA.query("DELETE FROM payments");
     }
@@ -131,7 +143,9 @@ angular.module('starter.services', ['ngResource'])
         addPayment: addPayment,
         clearDatabase: clearDatabase,
         getAllPaymentsFromFriend: getAllPaymentsFromFriend,
-        getAll: getAll
+        getAll: getAll,
+        getDebitAmount: getDebitAmount,
+        getCreditAmount: getCreditAmount
     }
 
 })
@@ -196,8 +210,8 @@ angular.module('starter.services', ['ngResource'])
 
             if(navigator && navigator.contacts) {
                 navigator.contacts.pickContact(function(contact){
-                    console.log(JSON.stringify(contact.phoneNumbers), contact.phonesNumbers !== 'undefined')
-                    if(contact.phonesNumbers && contact.phonesNumbers.length)
+                    console.log(JSON.stringify(contact), contact.phonesNumbers !== 'undefined')
+                    if(contact)
                         deferred.resolve( formatContact(contact) );
                     else
                         deferred.reject("Contato sem número de telefone");
@@ -217,6 +231,8 @@ angular.module('starter.services', ['ngResource'])
 
 .service('LoginService', function($q, DBA) {    
 
+    var _user = null;
+
     function addFriend(friend) {
         var parameters = [friend.id, friend.name, friend.picture];
         return DBA.query("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", parameters);
@@ -229,35 +245,45 @@ angular.module('starter.services', ['ngResource'])
 
     var getUser = function(){
         return DBA.query("SELECT * FROM user")
-                    .then(function (result) {
+                    .then(function (result) {                        
                         return DBA.getAll(result);
                     });
     }
 
+    getUser().then(function(user){
+        _user = user[0] ? user : null;
+    })
+
     var clearDatabase = function () {
-        return DBA.query("DELETE FROM user");
+        _user = null;
+        return DBA.query("DELETE FROM user ");
+    }
+
+    var isLoggedUser = function(){
+        return _user ? true: false;
     }
     
     var loginUser =  function(user) {
             var deferred = $q.defer();
             var promise = deferred.promise;
- 
-            getUser().then(function(success){
-                if(!success.length)
-                    setUser(user).then(function(res ){
-                            getUser()
-                                .then(function(user){
-                                    deferred.resolve(user)
-                                })
-                    }, function(){
-                        console.log('Aconteceu algo estranho com seu login :)')
-                        deferred.reject('Aconteceu algo estranho com seu login :(');
-                    })
-                else
+
+            if(!isLoggedUser()){
+                setUser(user).then(function(){  
+                        getUser()
+                            .then(function(user){     
+                                _user = user[0];                           
+                                deferred.resolve(user)
+                            })
+                }, function(){
+                    deferred.reject('Aconteceu algo estranho com seu login :(');
+                })
+            }else{
+                getUser().then(function(success){
                     deferred.resolve(success)
-            }, function(error){
-                deferred.reject('Aconteceu algo estranho com seu login :(');
-            })
+                }, function(error){
+                    deferred.reject('Aconteceu algo estranho com seu login :(');
+                })
+            }            
                 
             promise.success = function(fn) {
                 promise.then(fn);
@@ -270,6 +296,7 @@ angular.module('starter.services', ['ngResource'])
             return promise;
     }   
     return {           
+        isLoggedUser: isLoggedUser,
         clearDatabase: clearDatabase,
         loginUser: loginUser,
         setUser: setUser,

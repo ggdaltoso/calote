@@ -9,12 +9,23 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         $scope.modal = modal;
     });
 
+    $scope.$watch(function () {
+        return $ionicSideMenuDelegate.getOpenRatio();
+      },
+        function (ratio) {
+            console.log(ratio && LoginService.isLoggedUser())
+          if (ratio && LoginService.isLoggedUser()){           
+            $scope.getUserAmounts();
+          }
+    });
+
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
     // listen for the $ionicView.enter event:
     // $scope.$on('$ionicView.enter', function (e) {
-    // });
+    //   console.log('isLoggedUser ' + LoginService.isLoggedUser()); 
+    //});
 
     // Form data for the login modal
     $scope.loginData = {};
@@ -79,11 +90,10 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             .then(function(user){
                                 $scope.user = user[0];
                                 $scope.isLoggedUser = true;
+                                $scope.getUserAmounts()
                             }, function(error){
                                 console.log(error)
                             });
-
-                        $scope.user = result.data;
                     });
 
         } else {
@@ -100,12 +110,20 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         } else {
             LoginService.getUser()
                 .then(function(user){
-                    console.log(user)
                     $scope.user = user[0];
                 }, function(error){
                     console.log(error)
                 });
         }
+    }
+
+    $scope.getUserAmounts = function(){
+        Payments.getCreditAmount().then(function(result){
+             $scope.user.creditAmount = result.creditAmount;
+        })
+        Payments.getDebitAmount().then(function(result){
+             $scope.user.debitAmount = result.debitAmount;
+        })
     }
 
     $scope.loggedUser();
@@ -230,7 +248,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
-            template: '<input type="number" step="0.01" min="0" ng-model="data.debt">',
+            template: '<h4>Valor</h4><input type="number" step="0.01" min="0" ng-model="data.debt">'+
+                      '<h4>Descrição <small>optional</small></h4><input type="text" maxlength="10" ng-model="data.description">',
             title: 'Aumentar a dívida',
             scope: $scope,
             buttons: [
@@ -248,34 +267,35 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             e.preventDefault();
                             myPopup.close();
                         } else {
-                            return $scope.data.debt;
+                            return $scope.data;
                         }
                     }
                 },
             ]
         });
         myPopup.then(function (res) {
-            var newFriend = angular.copy($scope.friend);
-            newFriend.debt = $scope.friend.debt + res;            
+            console.log(res)
+            if(res.debt){
+                var newFriend = angular.copy($scope.friend);
+                newFriend.debt = $scope.friend.debt + res.debt;            
 
-            Friends.updateFriend($scope.friend, newFriend)
-                .then(function () {
-                    Friends.getFriendByID(friendId)
-                        .then(function (result) {
-                            $scope.friend = result;
-                        })
-                });
+                Friends.updateFriend($scope.friend, newFriend)
+                    .then(function () {
+                        Friends.getFriendByID(friendId)
+                            .then(function (result) {
+                                $scope.friend = result;
+                            })
+                    });
 
-            Payments.addPayment($scope.friend, res, true)
-                .then(function(){
-                    Payments.getAllPaymentsFromFriend($scope.friend)
-                        .then(function(payments){
-                            $scope.friend.payments = payments;
-                            console.log('payments', JSON.stringify($scope.friend), payments)
-                        });
-                });
-
-            
+                Payments.addPayment($scope.friend, res.debt, 1, res.description)
+                    .then(function(){
+                        Payments.getAllPaymentsFromFriend($scope.friend)
+                            .then(function(payments){
+                                $scope.friend.payments = payments;
+                                console.log('payments', JSON.stringify($scope.friend), payments)
+                            });
+                    });
+            }            
         });
     };
 
@@ -285,7 +305,8 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
-            template: '<input type="number" step="0.01" min="0" ng-model="data.credit">',
+            template: '<h4>Valor</h4><input type="number" step="0.01" min="0" ng-model="data.credit">'+
+                      '<h4>Descrição <small>optional</small></h4><input type="text" maxlength="10" ng-model="data.description">',
             title: 'Diminuir a dívida',
             scope: $scope,
             buttons: [
@@ -303,31 +324,33 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                             e.preventDefault();
                             myPopup.close();
                         } else {
-                            return $scope.data.credit;
+                            return $scope.data;
                         }
                     }
                 },
             ]
         });
         myPopup.then(function (res) {
-            var newFriend = angular.copy($scope.friend);
-            newFriend.debt = $scope.friend.debt - res;
+            if(res.credit){
+                var newFriend = angular.copy($scope.friend);
+                newFriend.debt = $scope.friend.debt - res;
 
-            Friends.updateFriend($scope.friend, newFriend)
-                .then(function () {
-                    Friends.getFriendByID(friendId)
-                        .then(function (result) {
-                            $scope.friend = result;
-                        })
-                });
-
-            Payments.addPayment($scope.friend, res, false)
-            .then(function(){
-                Payments.getAllPaymentsFromFriend($scope.friend)
-                    .then(function(payments){
-                        $scope.friend.payments = payments;                        
+                Friends.updateFriend($scope.friend, newFriend)
+                    .then(function () {
+                        Friends.getFriendByID(friendId)
+                            .then(function (result) {
+                                $scope.friend = result;
+                            })
                     });
-            });
+
+                Payments.addPayment($scope.friend, res.credit, 0, res.description)
+                    .then(function(){
+                        Payments.getAllPaymentsFromFriend($scope.friend)
+                            .then(function(payments){
+                                $scope.friend.payments = payments;                        
+                            });
+                    });         
+            }
         });
     };
 

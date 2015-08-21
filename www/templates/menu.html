@@ -23,10 +23,19 @@
                         <img class="full-image" src="http://graph.facebook.com/{{user.id}}/picture?width=270&height=270" />
                     </div>
                     <div class="item tabs tabs-secondary tabs-icon-left">
+                        <a class="tab-item" href="">
+                        <i class="icon assertive ion-plus-round"></i>
+                            $ {{user.creditAmount || 0 | number:2}}
+                        </a>
+                        <a class="tab-item" href="">
+                        <i class="icon balanced ion-minus-round"></i>
+                            $ {{user.debitAmount || 0 | number:2}}
+                            
+                        </a>
                         <a class="tab-item" href="" ng-click="logout()">
-                        Logout &nbsp;
-                        <i class="icon ion-log-out"></i>
-                    </a>
+                            Logout &nbsp;
+                            <i class="icon ion-log-out"></i>
+                        </a>
                     </div>
                 </div>
                 <div ng-hide="user">
@@ -36,7 +45,6 @@
                         </button>
                     </label>
                 </div>
-
             </ion-list>
         </ion-content>
     </ion-side-menu>
