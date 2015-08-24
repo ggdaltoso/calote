@@ -25,6 +25,14 @@
     {
       "locator": "https://github.com/brodysoft/Cordova-SQLitePlugin.git",
       "id": "io.litehelpers.cordova.sqlite"
+    },
+    {
+      "locator": "https://github.com/phonegap-build/PushPlugin.git",
+      "id": "com.phonegap.plugins.PushPlugin"
+    },
+    {
+      "locator": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
+      "id": "nl.x-services.plugins.toast"
     }
   ],
   "cordovaPlatforms": [

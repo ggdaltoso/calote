@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
-.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, Payments, ngFB, LoginService, $rootScope, $ionicSideMenuDelegate) {
+.controller('AppCtrl', function ($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoading, Friends, Payments, ngFB, LoginService, $rootScope, $ionicSideMenuDelegate, PushProcessingService) {
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -34,18 +34,6 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.closeLogin = function () {
         $scope.modal.hide();
     };
-
-    // Open the login modal
-    $scope.login = function() {
-        LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
-            
-        }).error(function(data) {
-            var alertPopup = $ionicPopup.alert({
-                title: 'Login failed!',
-                template: 'Please check your credentials!'
-            });
-        });
-    }
 
     $scope.fbLogin = function () {
         ngFB.login({
@@ -91,6 +79,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                                 $scope.user = user[0];
                                 $scope.isLoggedUser = true;
                                 $scope.getUserAmounts()
+                                $scope.initNotificationService();
                             }, function(error){
                                 console.log(error)
                             });
@@ -100,6 +89,10 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             $scope.fbLogin();
             //alert('Not signed in!'); //href="#/app/profile"
         }
+    }
+
+    $scope.initNotificationService = function(){
+        PushProcessingService.initialize();
     }
 
     $scope.loggedUser = function () {
