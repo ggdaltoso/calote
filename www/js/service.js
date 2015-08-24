@@ -4,7 +4,7 @@ angular.module('starter.services', ['ngResource'])
 
     function addFriend(friend) {
         var parameters = [friend.id, friend.name, friend.picture];
-        return DBA.query("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?, 0)", parameters);
+        return DBA.query("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?,0)", parameters);
     }
 
     function addAllFriends(friends) {
@@ -54,6 +54,11 @@ angular.module('starter.services', ['ngResource'])
         return DBA.query("UPDATE friend SET debt = (?) WHERE id = (?)", parameters);
     }
 
+    function setOldFriend(friend) {
+        var parameters = [friend.id];
+        return DBA.query("UPDATE friend SET newFriend = 0 WHERE id = (?)", parameters);
+    }
+
     var searchFriends = function (searchFilter) {
 
         var deferred = $q.defer();
@@ -93,7 +98,8 @@ angular.module('starter.services', ['ngResource'])
         getTop10: getTop10,
         addFriend: addFriend,
         addAllFriends: addAllFriends,
-        removeFriend: removeFriend
+        removeFriend: removeFriend,
+        setOldFriend: setOldFriend
     }
 
 })
@@ -122,14 +128,9 @@ angular.module('starter.services', ['ngResource'])
             });
     }
 
-    function getCreditAmount() {
-        return DBA.query("SELECT SUM(howMuch) as creditAmount FROM payments WHERE creditOrDebit = 1")
-            .then(function (result) {
-                return DBA.getById(result);
-            });
-    }
-    function getDebitAmount() {
-        return DBA.query("SELECT SUM(howMuch) as debitAmount FROM payments WHERE creditOrDebit = 0")
+    function getAmount() {
+        console.log('getAmount')
+        return DBA.query("SELECT SUM(debt) as 'amount' FROM friend")
             .then(function (result) {
                 return DBA.getById(result);
             });
@@ -144,8 +145,7 @@ angular.module('starter.services', ['ngResource'])
         clearDatabase: clearDatabase,
         getAllPaymentsFromFriend: getAllPaymentsFromFriend,
         getAll: getAll,
-        getDebitAmount: getDebitAmount,
-        getCreditAmount: getCreditAmount
+        getAmount: getAmount,
     }
 
 })

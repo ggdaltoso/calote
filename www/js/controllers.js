@@ -111,12 +111,10 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 
     $scope.getUserAmounts = function(){
-        Payments.getCreditAmount().then(function(result){
-             $scope.user.creditAmount = result.creditAmount;
-        })
-        Payments.getDebitAmount().then(function(result){
-             $scope.user.debitAmount = result.debitAmount;
-        })
+        Payments.getAmount().then(function(result){
+            console.log(result)
+             $scope.user.amount = result.amount;
+        });
     }
 
     $scope.loggedUser();
@@ -133,9 +131,10 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     }
 })
 
-.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, Friends, Payments, ContactsService){
+.controller('FriendsCtrl', function ($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilterBar, $ionicPopup, $state, Friends, Payments, ContactsService){
 
     $scope.$on('bdPopulated', function () {
+        console.log('rootScope bdPopulated')
         Friends.getAllFriends()
             .then(function (fs) {
                 $scope.friends = fs;
@@ -179,10 +178,13 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     $scope.pickContact = function() {
         ContactsService.pickContact().then(
                 function(contact) {
-                    console.log(contact);
+                    var _contact = contact;
+                    $rootScope.$broadcast('newFriend');
                     Friends.addFriend(contact).then(function(success){
-                        console.log('sucesso!');
-                        $rootScope.$broadcast('bdPopulated');
+                        console.log('sucesso!', success, _contact);
+                        
+                        $state.go('app.friend', { friendId : _contact.id } )
+                        
                     }, function(error){
                         alert(error);
                     });
@@ -216,6 +218,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
             });
     });
 
+
+
+    $scope.notify = function(friend){
+        alert(friend.name);
+    }
+
 })
 
 .controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, Friends, Payments) {
@@ -223,19 +231,20 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
     Friends.getFriendByID(friendId).then(function (result) {
         $scope.friend = result;
+
+        if(result.newFriend){
+            $scope.incrementPopup();
+            Friends.setOldFriend(result);
+        }
+
+
         Payments.getAllPaymentsFromFriend($scope.friend)
                         .then(function(payments){
                             $scope.friend.payments = payments;
                         });
-    });
+    });    
 
     $scope.data = {};
-
-    $scope.listCanSwipe = true;
-
-    $scope.notify = function(friend){
-        alert('Marcelinha')
-    }
 
     $scope.incrementPopup = function () {
 

@@ -25,12 +25,7 @@
                     <div class="item tabs tabs-secondary tabs-icon-left">
                         <a class="tab-item" href="">
                         <i class="icon assertive ion-plus-round"></i>
-                            $ {{user.creditAmount || 0 | number:2}}
-                        </a>
-                        <a class="tab-item" href="">
-                        <i class="icon balanced ion-minus-round"></i>
-                            $ {{user.debitAmount || 0 | number:2}}
-                            
+                            $ {{user.amount || 0 | number:2}}
                         </a>
                         <a class="tab-item" href="" ng-click="logout()">
                             Logout &nbsp;
