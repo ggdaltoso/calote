@@ -8,7 +8,7 @@
                     <i ng-class="{ assertive: friend.debt >= 0,  balanced: friend.debt < 0}"> $ {{friend.debt | number:2 }} </i> </p>
             </div>
             <div class="item tabs tabs-secondary tabs-icon-left">
-                <a class="tab-item" ng-click="incrementPopup()">
+                <a class="tab-item" ng-click="incrementPopup()" >
                     <i class="icon ion-plus-round"></i> Aumentar
                 </a>
                 <a class="tab-item" ng-click="decrementPopup()">
@@ -22,7 +22,7 @@
                     <i class="icon " 
                     ng-class="{true:'assertive ion-plus-round', false:'balanced ion-minus-round'}[payment.creditOrDebit == 1]"></i>
                     <h2>${{payment.howMuch | number:2}}</h2>
-                    <p>{{payment.description}} - {{payment.dataPayment | date:"dd/MM/yyyy"}}</p>
+                    <p>{{payment.description}} <span ng-show="payment.description"> - </span> {{payment.dataPayment | date:"dd/MM/yyyy"}}</p>
                     
                 </a>
             </ion-item>

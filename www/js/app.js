@@ -4,7 +4,7 @@ var db = null;
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ion-fab-button', 'ngOpenFB', 'ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ion-fab-button', 'ui.utils.masks', 'ngOpenFB', 'ngCordova'])
 
 .run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 
@@ -42,13 +42,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
             tx.executeSql("CREATE TABLE IF NOT EXISTS friend (id text primary key, name text, picture text, debt long default 0, newFriend int default 1)");
             tx.executeSql("CREATE TABLE IF NOT EXISTS payments (id text prymary key, friendId text, howMuch long default 0, creditOrDebit integer, description text default '', dataPayment datetime)");
             tx.executeSql("CREATE TABLE IF NOT EXISTS user (id text primary key, name text, picture text, GCMID text)")
-            /* test 
+            /* test */
             tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?,?)", ["+55 16 8100 0342","Gabriel",".img/default.png", 10]);
             tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?,?)", ["+55 16 8100 0343","Jhonny",".img/default.png", 20]);
             tx.executeSql("INSERT INTO friend (id, name, picture, debt) VALUES (?,?,?,?)", ["+55 16 8100 0344","Marcela",".img/default.png", 35]);
             tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, description, dataPayment) VALUES (?,?,?,?,?)", ["+55 16 8100 0342",10,0,"Pastel","2015-08-16T13:58:56.588Z"]);
             tx.executeSql("INSERT INTO payments (friendId, howMuch, creditOrDebit, description, dataPayment) VALUES (?,?,?,?,?)", ["+55 16 8100 0342",20,1,"Viagem","2015-08-16T13:58:56.588Z"]);
-            */
+            
             console.log('transaction ends');
         });
     });

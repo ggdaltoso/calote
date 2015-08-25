@@ -226,34 +226,42 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
 })
 
-.controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, Friends, Payments) {
+.controller('FriendCtrl', function ($scope, $stateParams, $rootScope, $ionicPopup, $timeout, Friends, Payments) {
     var friendId = $stateParams.friendId;
 
     Friends.getFriendByID(friendId).then(function (result) {
         $scope.friend = result;
-
+        
         if(result.newFriend){
-            $scope.incrementPopup();
+            $scope.incrementPopup();    
+            // TODO - set keyboard number
+            /*    
+            $timeout(function() {
+                cordova.plugins.Keyboard.show();
+            }, 1000);
+            */
             Friends.setOldFriend(result);
         }
-
 
         Payments.getAllPaymentsFromFriend($scope.friend)
                         .then(function(payments){
                             $scope.friend.payments = payments;
                         });
+
     });    
 
-    $scope.data = {};
 
+    $scope.data = {};
+    $scope.data.debt = 0;
     $scope.incrementPopup = function () {
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
-            template: '<h4>Valor</h4><input type="number" step="0.01" min="0" ng-model="data.debt">'+
-                      '<h4>Descrição <small>optional</small></h4><input type="text" maxlength="10" ng-model="data.description">',
+            template: '<h4>Valor</h4><input type="text" id="debit" autofocus="true" step="0.01" min="0" ng-model="data.debt" ui-money-mask>'+
+                      '<h4>Descrição <small>opcional</small></h4><input type="text" maxlength="10" ng-model="data.description">',
             title: 'Aumentar a dívida',
             scope: $scope,
+            focusFirstInput: true,
             buttons: [
                 {
                     text: 'Cancelar',
@@ -297,6 +305,9 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                                 console.log('payments', JSON.stringify($scope.friend), payments)
                             });
                     });
+
+                res.debt = null;
+                res.description = '';
             }            
         });
     };
@@ -307,7 +318,7 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
-            template: '<h4>Valor</h4><input type="number" step="0.01" min="0" ng-model="data.credit">'+
+            template: '<h4>Valor</h4><input type="text" step="0.01" min="0" ng-model="data.credit" ui-money-mask>'+
                       '<h4>Descrição <small>optional</small></h4><input type="text" maxlength="10" ng-model="data.description">',
             title: 'Diminuir a dívida',
             scope: $scope,
@@ -352,6 +363,9 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
                                 $scope.friend.payments = payments;                        
                             });
                     });         
+
+                res.credit = null;
+                res.description = '';
             }
         });
     };
@@ -362,4 +376,23 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
     };
 })
 
-.controller('ProfileCtrl', function ($http, $scope, $location, $cordovaSQLite, ngFB, Friends) {});
+.controller('ProfileCtrl', function ($http, $scope, $location, $cordovaSQLite, ngFB, Friends) {})
+
+.directive('isFocused', function($timeout) {
+    return {
+        scope: {
+            trigger: '&isFocused'
+        },
+        link: function(scope, element) {
+            if (scope.trigger()) {
+                $timeout(function() {
+                    console.log(element);
+
+                    element[0].focus();
+                    element[0].click();
+                    //cordova.plugins.Keyboard.show();
+                });
+            }
+        }
+    };
+});;
