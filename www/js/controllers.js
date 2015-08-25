@@ -233,13 +233,12 @@ angular.module('starter.controllers', ['starter.services', 'ngOpenFB'])
         $scope.friend = result;
         
         if(result.newFriend){
-            $scope.incrementPopup();    
-            // TODO - set keyboard number
-            /*    
+            $scope.incrementPopup();               
+               
             $timeout(function() {
                 cordova.plugins.Keyboard.show();
             }, 1000);
-            */
+            
             Friends.setOldFriend(result);
         }
 
