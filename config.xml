@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.ggdaltoso.calote" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Calote</name>
-  <description>&#xD;
-            Anote de maneira simples e divertida seus amigos caloteiros!&#xD;
+  <description>
+            Anote de maneira simples e divertida seus amigos caloteiros!
         </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">&#xD;
-            AppXtorm Team&#xD;
+  <author email="hi@ionicframework" href="http://ionicframework.com/">
+            AppXtorm Team
         </author>
   <content src="index.html"/>
   <access origin="*"/>

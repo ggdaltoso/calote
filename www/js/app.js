@@ -1,10 +1,9 @@
 var db = null;
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.bar', 'ion-fab-button', 'ui.utils.masks', 'ngOpenFB', 'ngCordova'])
+angular.module('calote.services', ['ngResource']);
+angular.module('calote.controllers', ['calote.services', 'ngOpenFB']);
+
+angular.module('calote', ['ionic', 'calote.controllers', 'calote.services', 'jett.ionic.filter.bar', 'ion-fab-button', 'ui.utils.masks', 'ngOpenFB', 'ngCordova'])
 
 .run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 
@@ -98,7 +97,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'jett.ionic.filter.ba
             }
         }
     });
-
 
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/app/friends');
