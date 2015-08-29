@@ -20,7 +20,7 @@ function ContactsService($q) {
             if(navigator && navigator.contacts) {
                 navigator.contacts.pickContact(function(contact){
                     console.log(JSON.stringify(contact), contact.phonesNumbers !== 'undefined')
-                    if(contact)
+                    if(contact && contact.phonesNumbers !== 'undefined' && contact.phonesNumbers.length > 0)
                         deferred.resolve( formatContact(contact) );
                     else
                         deferred.reject("Contato sem número de telefone");

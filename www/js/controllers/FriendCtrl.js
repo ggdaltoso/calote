@@ -79,9 +79,11 @@ function FriendCtrl($scope, $stateParams, $rootScope, $ionicPopup, $timeout, Fri
                             });
                     });
 
-                res.debt = null;
+                res.debt = 0;
                 res.description = '';
-            }            
+            }else{
+                cordova.plugins.Keyboard.close();
+            }
         });
     };
 
@@ -137,8 +139,10 @@ function FriendCtrl($scope, $stateParams, $rootScope, $ionicPopup, $timeout, Fri
                             });
                     });         
 
-                res.credit = null;
+                res.credit = 0;
                 res.description = '';
+            }else{
+                cordova.plugins.Keyboard.close();
             }
         });
     };

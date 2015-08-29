@@ -24,7 +24,6 @@ function PushProcessingService(LoginService) {
                 //You'll probably have a web service (wrapped in an Angular service of course) set up for this.
                 //For example:
                 LoginService.setGCMID(id).then(function(response){
-                    console.log(response)
                     if (response) {
                         console.info('NOTIFY  Registration succeeded');
                     } else {

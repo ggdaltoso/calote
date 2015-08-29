@@ -85,13 +85,21 @@ function FriendsCtrl($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilt
             Friends.getTop10().then(function (fs) {
                 $scope.friends = fs
             });
-    });
-
-
+    });    
 
     $scope.notify = function(friend){
-        alert(friend.name);
+        showAlert('Notificação', friend.name);
     }
+
+    var showAlert = function(titleMsg, msg) {
+         var alertPopup = $ionicPopup.alert({
+           title: titleMsg,
+           template: msg
+         });
+         alertPopup.then(function(res) {
+           console.log('Thank you for not eating my delicious ice cream cone');
+         });
+       };   
 
 };
 
