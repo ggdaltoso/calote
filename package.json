@@ -33,7 +33,17 @@
     {
       "locator": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
       "id": "nl.x-services.plugins.toast"
-    }
+    },
+    {
+      "locator": "https://github.com/vliesaputra/DeviceInformationPlugin",
+      "id": "com.vliesaputra.deviceinformation"
+    },
+    "org.apache.cordova.device",
+    {
+      "locator": "https://github.com/oneminutedistraction/phonenumber.git",
+      "id": "at.oneminutedistraction.phonenumber"
+    },
+    "com.simonmacdonald.telephonenumber"
   ],
   "cordovaPlatforms": [
     "android"

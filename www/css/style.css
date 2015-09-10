@@ -6,3 +6,8 @@
   padding: 50px;
   text-align: center;
 }
+
+.formIcon{
+	float: right;
+	margin-right: 12px;
+}

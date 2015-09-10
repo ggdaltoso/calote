@@ -48,6 +48,7 @@ function FriendsCtrl($scope, $stateParams, $ionicLoading, $rootScope, $ionicFilt
         ContactsService.pickContact().then(
                 function(contact) {
                     var _contact = contact;
+                    console.log(contact)
                     $rootScope.$broadcast('newFriend');
                     Friends.addFriend(contact).then(function(success){
                         console.log('sucesso!', success, _contact);

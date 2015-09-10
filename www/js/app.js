@@ -3,7 +3,7 @@ var db = null;
 angular.module('calote.services', ['ngResource']);
 angular.module('calote.controllers', ['calote.services', 'ngOpenFB']);
 
-angular.module('calote', ['ionic', 'calote.controllers', 'calote.services', 'jett.ionic.filter.bar', 'ion-fab-button', 'ui.utils.masks', 'ngOpenFB', 'ngCordova'])
+angular.module('calote', ['ionic', 'calote.controllers', 'calote.services', 'jett.ionic.filter.bar', 'ion-fab-button', 'ui.utils.masks', 'ngOpenFB', 'ngCordova', 'cwill747.phonenumber'])
 
 .run(function ($ionicPlatform, ngFB, $cordovaSQLite) {
 

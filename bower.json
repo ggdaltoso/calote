@@ -9,5 +9,8 @@
     "robotodraft": "~1.1.0",
     "ionic-filter-bar": "~1.0.4",
     "angular-input-masks": "~2.1.0"
+  },
+  "dependencies": {
+    "angular-libphonenumber": "~0.0.5"
   }
 }

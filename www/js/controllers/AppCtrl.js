@@ -18,13 +18,35 @@ function AppCtrl($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoad
           }
     });
 
+    $scope.user = {};    
+    $scope.countrycode = "BR";
+    $scope.phoneNumber = null;
+
+    $scope.$watch('phoneNumber', function(newValue, oldValue) {
+      console.log(newValue, oldValue);
+    });
+
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
     // listen for the $ionicView.enter event:
-    // $scope.$on('$ionicView.enter', function (e) {
-    //   console.log('isLoggedUser ' + LoginService.isLoggedUser()); 
-    //});
+     $scope.$on('$ionicView.enter', function (e) {
+
+       var deviceInfo = cordova.require("cordova/plugin/DeviceInformation");
+        deviceInfo.get(function(result) {
+                var result = JSON.parse(result);
+                $scope.user.email = result.account0Name || '';
+                $scope.device = result;
+                console.log($scope.user, $scope.device)
+            }, function() {
+                console.log("error");
+            });
+    });
+
+     
+function success(phonenumber) {
+    console.log("My number is " + phonenumber);
+}
 
     // Form data for the login modal
     $scope.loginData = {};
@@ -49,7 +71,7 @@ function AppCtrl($http, $scope, $ionicModal, $timeout, $location, $q, $ionicLoad
                 }
             },
             function (err) {
-                alert('Facebook login failed' + err);
+                //alert('Facebook login failed');
             });
     };
 

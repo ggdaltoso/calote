@@ -18,7 +18,37 @@
         </ion-header-bar>
         <ion-content>
             <ion-list>
-                <div class="list card" ng-show="user">
+                <div ng-hide="LoginService.isLoggedUser()" class="list list-inset">
+                   <form name="form">
+  
+                    <label class="item item-input item-stacked-label">
+                        <span class="input-label">Email</span>
+                        <div class="formIcon" ng-show="form.email.$valid">
+                            <i class="icon ion-checkmark-round balanced"></i>
+                        </div>
+                        <input type="email" placeholder="email" name="email" ng-model="user.email" required>
+                      </label>
+
+
+
+                    <label class="item item-input item-stacked-label">
+                        <span class="input-label">Telefone</span>   
+                        <div class="formIcon" ng-show="form.phoneNumber.$valid">
+                            <i class="icon ion-checkmark-round balanced"></i>
+                        </div>  
+                        <input id="phoneNumber" placeholder="telefone" type="text" name="phoneNumber" ng-model="phoneNumber" phone-number country-code="countrycode" class="ng-isolate-scope ng-dirty ng-valid ng-valid-phone-number" required>
+                        
+                      </label>
+
+                    <button class="button button-block button-positive" 
+                            ng-click="fbLogin()" 
+                            ng-disabled="!form.phoneNumber.$valid || phoneNumber == null">
+                        Login with Facebook
+                        </button>
+
+                    </form>
+                </div>
+                <div class="list card" ng-show="LoginService.isLoggedUser()">
                     <div class="item item-body">
                         <img class="full-image" src="{{user.picture}}" />
                     </div>
@@ -33,13 +63,7 @@
                         </a>
                     </div>
                 </div>
-                <div ng-hide="user">
-                    <label class="item">
-                    <button class="button button-block button-positive" ng-click="fbLogin()">
-                        Login with Facebook
-                        </button>
-                    </label>
-                </div>
+                
             </ion-list>
         </ion-content>
     </ion-side-menu>
